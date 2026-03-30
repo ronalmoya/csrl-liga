@@ -2,30 +2,27 @@ import streamlit as st
 import pandas as pd
 
 # Configuración de la página
-st.set_page_config(page_title="CSRL Colombia - Dashboard", layout="wide")
+st.set_page_config(page_title="CSRL Colombia", page_icon="🏎️", layout="wide")
 
-# Encabezado con tu marca
-st.title("🏎️ CSRL Colombia: Sim Racing League")
-st.markdown("### Clasificación Oficial y Estadísticas")
+st.title("🏎️ CSRL Colombia Sim Racing")
 
-# Cargar los datos desde tu GitHub (usa tus nombres de archivo)
-@st.cache_data
-def load_data():
-    # Reemplaza 'TU_USUARIO' por tu nombre de cuenta de GitHub
-    url = "https://raw.githubusercontent.com/TU_USUARIO/csrl-liga/main/F1LM.v1.41.4.xlsx%20-%20Final%20Classifications.csv"
-    df = pd.read_csv(url)
-    return df
+# Función para cargar tus archivos
+def cargar_datos(nombre_archivo):
+    # Usamos tu usuario Anthonny2001 que vi en la captura
+    user = "Anthonny2001"
+    repo = "csrl-liga"
+    url = f"https://raw.githubusercontent.com/{user}/{repo}/main/{nombre_archivo.replace(' ', '%20')}"
+    return pd.read_csv(url)
 
 try:
-    data = load_data()
-    
-    # Mostrar la tabla de posiciones
-    st.subheader("🏆 Tabla de Pilotos")
-    st.dataframe(data.style.highlight_max(axis=0, color='#FFD700'), use_container_width=True)
+    # 1. Tabla de Posiciones
+    st.subheader("🏆 Clasificación del Campeonato")
+    df_puntos = cargar_datos("F1LM.v1.41.4.xlsx - Final Classifications.csv")
+    st.table(df_puntos[['Name', 'Team', 'Points']].head(15))
 
-    # Gráfico de puntos
-    st.subheader("📊 Rendimiento por Piloto")
-    st.bar_chart(data.set_index('Name')['Points'])
+    # 2. Gráfico de Rendimiento
+    st.subheader("📊 Comparativa de Puntos")
+    st.bar_chart(df_puntos.set_index('Name')['Points'])
 
 except Exception as e:
-    st.error("Todavía estamos calentando motores. Asegúrate de que los archivos CSV estén en el repositorio.")
+    st.error("Asegúrate de que los nombres de los archivos CSV en GitHub sean exactos.")
